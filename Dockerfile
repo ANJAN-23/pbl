@@ -4,9 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-# Compile all Java files (safe for folders too)
-RUN find . -name "*.java" > sources.txt && \
-    javac -cp ".:lib/mysql-connector-j-9.7.0.jar" @sources.txt
+# Compile ONLY your project files (not lib folder)
+RUN javac -cp ".:lib/mysql-connector-j-9.7.0.jar" $(find . -path "./lib" -prune -o -name "*.java" -print)
 
 EXPOSE 4567
 
