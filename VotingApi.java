@@ -13,7 +13,9 @@ public class VotingApi {
         VotingSystem.createGenesisBlock();
         VotingSystem.loadBlockchainFromDatabase();
 
-        int port = 4567;
+       int port = Integer.parseInt(
+    System.getenv().getOrDefault("PORT", "4567")
+);
         var server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/", exchange -> {
             try {

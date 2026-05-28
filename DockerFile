@@ -1,0 +1,11 @@
+FROM eclipse-temurin:25
+
+WORKDIR /app
+
+COPY . .
+
+RUN javac -cp ".:lib/mysql-connector-j-9.7.0.jar" *.java
+
+EXPOSE 4567
+
+CMD ["java", "-cp", ".:lib/mysql-connector-j-9.7.0.jar", "VotingApi"]
