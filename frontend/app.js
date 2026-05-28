@@ -1,5 +1,4 @@
 const API_BASE = "https://pbl-4-jua6.onrender.com";
-
 const userLabelEl = document.getElementById("userLabel");
 const messageEl = document.getElementById("message");
 const logoutBtn = document.getElementById("logoutBtn");
