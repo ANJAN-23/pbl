@@ -1,4 +1,5 @@
 const API_BASE = "https://pbl-4-jua6.onrender.com";
+
 const userLabelEl = document.getElementById("userLabel");
 const messageEl = document.getElementById("message");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -29,7 +30,9 @@ async function apiCall(path, options = {}) {
         ...(options.headers || {}),
       },
     });
+
     const text = await res.text();
+
     try {
       return JSON.parse(text);
     } catch {
@@ -50,19 +53,22 @@ async function refreshCandidates() {
   candidateBtnElsByName.clear();
 
   const data = await apiCall("/candidates");
+
   if (data?.error) {
-    setStatusWithKind("Backend not reachable. Start VotingApi first.", "error");
+    setStatusWithKind("Backend not reachable.", "error");
     candidatesGridEl.innerHTML = `Backend not reachable`;
     return;
   }
 
   const candidates = Array.isArray(data) ? data : [];
+
   if (candidates.length === 0) {
     candidatesGridEl.innerHTML = `No candidates available`;
     return;
   }
 
   candidatesGridEl.innerHTML = "";
+
   for (const c of candidates) {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -80,7 +86,9 @@ async function refreshCandidates() {
     btn.appendChild(votesEl);
 
     btn.addEventListener("click", () => castVote(c));
+
     candidatesGridEl.appendChild(btn);
+
     candidateVoteElsByName.set(c, votesEl);
     candidateBtnElsByName.set(c, btn);
   }
@@ -88,7 +96,9 @@ async function refreshCandidates() {
 
 async function refreshResults() {
   resultsBoxEl.textContent = "Loading...";
+
   const data = await apiCall("/results");
+
   if (data?.error) {
     setStatusWithKind("Backend not reachable.", "error");
     resultsBoxEl.textContent = "Backend not reachable";
@@ -99,8 +109,7 @@ async function refreshResults() {
   const totalVotes = data?.totalVotes ?? 0;
 
   for (const [candidate, votesEl] of candidateVoteElsByName.entries()) {
-    const v = results[candidate] ?? 0;
-    votesEl.textContent = `Votes: ${v}`;
+    votesEl.textContent = `Votes: ${results[candidate] ?? 0}`;
   }
 
   resultsBoxEl.textContent =
@@ -121,7 +130,9 @@ function formatTimestamp(ts) {
 
 async function refreshBlockchain() {
   chainBoxEl.textContent = "Loading...";
+
   const data = await apiCall("/blockchain");
+
   if (data?.error) {
     setStatusWithKind("Backend not reachable.", "error");
     chainBoxEl.textContent = "Backend not reachable";
@@ -129,18 +140,22 @@ async function refreshBlockchain() {
   }
 
   const chain = Array.isArray(data) ? data : [];
+
   if (chain.length === 0) {
     chainBoxEl.textContent = "No blocks yet.";
     return;
   }
 
-  const toShow = chain.slice(Math.max(0, chain.length - 20));
+  // OPTIMIZED: show only last 10 blocks
+  const toShow = chain.slice(-10);
   const startIdx = chain.length - toShow.length;
+
   let out = "";
 
   for (let i = 0; i < toShow.length; i++) {
-    const idx = startIdx + i;
     const b = toShow[i];
+    const idx = startIdx + i;
+
     out += `Block ${idx}\n`;
     out += `  voterId: ${b.voterId}\n`;
     out += `  candidate: ${b.candidate}\n`;
@@ -148,40 +163,49 @@ async function refreshBlockchain() {
     out += `  hash: ${b.hash}\n`;
     out += `  previousHash: ${b.previousHash}\n\n`;
   }
+
   chainBoxEl.textContent = out;
 }
 
 async function validateChain() {
   validateLabelEl.textContent = "Validating...";
-  validateLabelEl.classList.remove("statusBadge--valid", "statusBadge--invalid", "statusBadge--loading");
+  validateLabelEl.classList.remove(
+    "statusBadge--valid",
+    "statusBadge--invalid",
+    "statusBadge--loading"
+  );
   validateLabelEl.classList.add("statusBadge--loading");
 
   const data = await apiCall("/validate");
+
   if (data?.error) {
     validateLabelEl.textContent = "ERROR";
-    validateLabelEl.classList.remove("statusBadge--valid", "statusBadge--loading");
+    validateLabelEl.classList.remove("statusBadge--loading");
     validateLabelEl.classList.add("statusBadge--invalid");
-    setStatusWithKind("Backend error: " + data.error, "error");
+    setStatusWithKind("Backend error", "error");
     return;
   }
 
   const valid = Boolean(data?.valid);
+
   validateLabelEl.textContent = valid ? "VALID" : "INVALID";
-  validateLabelEl.classList.remove("statusBadge--valid", "statusBadge--invalid", "statusBadge--loading");
-  validateLabelEl.classList.add(valid ? "statusBadge--valid" : "statusBadge--invalid");
-  setStatusWithKind(valid ? "Blockchain is VALID" : "Blockchain is INVALID", valid ? "success" : "error");
+  validateLabelEl.classList.remove("statusBadge--loading");
+  validateLabelEl.classList.add(
+    valid ? "statusBadge--valid" : "statusBadge--invalid"
+  );
+
+  setStatusWithKind(
+    valid ? "Blockchain is VALID" : "Blockchain is INVALID",
+    valid ? "success" : "error"
+  );
 }
 
 async function castVote(candidate) {
   const voterId = window.AUTH?.getCurrentUser?.();
-  if (!voterId) return;
-
-  if (!candidate) {
-    setStatusWithKind("Select a candidate first.", "error");
-    return;
-  }
+  if (!voterId || !candidate) return;
 
   const clickedBtn = candidateBtnElsByName.get(candidate);
+
   if (clickedBtn) {
     candidatesGridEl
       .querySelectorAll("button.candidateBtn")
@@ -189,35 +213,37 @@ async function castVote(candidate) {
     clickedBtn.classList.add("candidateBtn--selected");
   }
 
-  const buttons = candidatesGridEl.querySelectorAll("button.candidateBtn");
-  buttons.forEach((b) => (b.disabled = true));
+  candidatesGridEl.querySelectorAll("button").forEach((b) => (b.disabled = true));
 
   setStatusWithKind("Submitting vote...", "info");
 
-  const payload = { voterId, candidate };
   const data = await apiCall("/vote", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ voterId, candidate }),
   });
 
   if (data?.error) {
-    setStatusWithKind("Backend error: " + data.error, "error");
-    buttons.forEach((b) => (b.disabled = false));
+    setStatusWithKind("Backend error", "error");
+    candidatesGridEl.querySelectorAll("button").forEach((b) => (b.disabled = false));
     return;
   }
 
-  const status = data?.status;
-  if (status === "ok") {
+  if (data?.status === "ok") {
     setStatusWithKind("Vote recorded!", "success");
-    await refreshResults();
-    await refreshBlockchain();
-    await validateChain();
-    buttons.forEach((b) => (b.disabled = false));
+
+    // OPTIMIZED: parallel refresh
+    await Promise.all([
+      refreshResults(),
+      refreshBlockchain(),
+      validateChain(),
+    ]);
+
+    candidatesGridEl.querySelectorAll("button").forEach((b) => (b.disabled = false));
     return;
   }
 
-  setStatusWithKind("Vote failed: " + (data?.message || data?.raw || "Unknown error"), "error");
-  buttons.forEach((b) => (b.disabled = false));
+  setStatusWithKind("Vote failed", "error");
+  candidatesGridEl.querySelectorAll("button").forEach((b) => (b.disabled = false));
 }
 
 async function init() {
@@ -230,18 +256,24 @@ async function init() {
 
   refreshBtn.addEventListener("click", async () => {
     setStatusWithKind("", "info");
-    await refreshResults();
-    await refreshBlockchain();
+
+    await Promise.all([
+      refreshResults(),
+      refreshBlockchain(),
+    ]);
   });
 
   validateBtn.addEventListener("click", validateChain);
 
-  await refreshCandidates();
-  await refreshResults();
-  await refreshBlockchain();
-  await validateChain();
+  // OPTIMIZED INIT (parallel load)
+  await Promise.all([
+    refreshCandidates(),
+    refreshResults(),
+    refreshBlockchain(),
+    validateChain(),
+  ]);
+
   setStatusWithKind("", "info");
 }
 
 init();
-
