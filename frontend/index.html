@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Voting - Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="margin-bottom: 16px;">Blockchain Voting</h1>
+
+      <div class="panel">
+        <div style="display:grid; grid-template-columns: 1fr auto; gap: 12px; align-items:center;">
+          <div>
+            <div><strong>User:</strong> <span id="userLabel">-</span></div>
+          </div>
+          <div style="text-align:right;">
+            <button class="danger" id="logoutBtn" type="button">Logout</button>
+          </div>
+        </div>
+        <div class="message" id="message" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h2 style="margin-top:0;">Cast Vote</h2>
+          <div class="subtleText">Click a candidate to vote.</div>
+          <div id="candidatesGrid" class="candidatesGrid" aria-live="polite">
+            Loading candidates...
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 style="margin-top:0;">Results</h2>
+          <div id="resultsBox" class="resultsBox">Loading...</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 style="margin-top:0;">Blockchain</h2>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button id="refreshBtn" type="button">Refresh</button>
+          <button id="validateBtn" type="button">Validate Chain</button>
+          <span id="validateLabel" class="statusBadge statusBadge--loading"></span>
+        </div>
+        <pre id="chainBox">Loading...</pre>
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
+

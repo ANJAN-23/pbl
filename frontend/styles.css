@@ -1,0 +1,230 @@
+:root {
+  --bg: #1a1a2e;
+  --card: #0f3460;
+  --text: #eaeaea;
+  --accent: #ffcc29;
+  --danger: #f65656;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #16213e, #0f3460);
+  color: var(--text);
+}
+
+.container {
+  margin: 16px auto;
+  max-width: 980px;
+  padding: 16px;
+}
+
+h1 {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.panel {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  margin-bottom: 16px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.subtleText {
+  color: rgba(234, 234, 234, 0.72);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+label {
+  display: block;
+  margin-top: 8px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+input::placeholder {
+  color: rgba(234, 234, 234, 0.5);
+}
+
+input:focus, select:focus {
+  box-shadow: 0 0 0 3px rgba(255, 204, 41, 0.22);
+}
+
+button {
+  margin-top: 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #1a1a2e;
+  font-weight: 900;
+  padding: 10px 16px;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+button:hover {
+  opacity: 0.93;
+  transform: translateY(-1px);
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+}
+
+.secondaryBtn {
+  background: rgba(255,255,255,0.05) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+}
+
+.message {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  min-height: 24px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.message.error {
+  background: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.30);
+}
+
+.message.success {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+
+.candidateBtn {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 160px;
+  margin-top: 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.candidateBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.98;
+  box-shadow: 0 16px 44px rgba(0,0,0,0.22);
+  background: rgba(255,255,255,0.06);
+}
+
+.candidateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.candidateBtn--selected {
+  border-color: rgba(255, 204, 41, 0.8);
+  background: rgba(255, 204, 41, 0.07);
+  box-shadow: 0 18px 54px rgba(255, 204, 41, 0.12), 0 16px 44px rgba(0,0,0,0.22);
+}
+
+.candidateName {
+  font-weight: 900;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.candidateVotes {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.candidatesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.resultsBox {
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 120px;
+  white-space: pre-line;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  overflow: auto;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+}
+
+.statusBadge--loading { color: var(--text); }
+
+.statusBadge--valid {
+  color: #d1fae5;
+  border-color: rgba(52, 211, 153, 0.55);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.statusBadge--invalid {
+  color: #fee2e2;
+  border-color: rgba(248, 113, 113, 0.55);
+  background: rgba(248, 113, 113, 0.12);
+}
+
+pre {
+  background: rgba(0,0,0,0.4);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 220px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#chainBox {
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+

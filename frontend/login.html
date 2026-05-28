@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Blockchain Voting</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Sign In</h1>
+      <div
+        class="subtleText"
+        style="text-align:center;margin-top:-6px;margin-bottom:12px;"
+      >
+        Enter your voter ID and password
+      </div>
+
+      <div class="panel">
+        <label for="voterId">Voter ID</label>
+        <input id="voterId" inputmode="numeric" autocomplete="username" />
+
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+        />
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="loginBtn" type="button">Login</button>
+          <button id="goSignupBtn" type="button" class="secondaryBtn">
+            Create Account
+          </button>
+        </div>
+
+        <div class="message" id="message"></div>
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+      const voterIdEl = document.getElementById("voterId");
+      const passwordEl = document.getElementById("password");
+      const messageEl = document.getElementById("message");
+      const loginBtn = document.getElementById("loginBtn");
+      const goSignupBtn = document.getElementById("goSignupBtn");
+
+      function setMessage(text, kind) {
+        messageEl.textContent = text || "";
+        messageEl.classList.remove("error", "success");
+        if (kind === "error") messageEl.classList.add("error");
+        if (kind === "success") messageEl.classList.add("success");
+      }
+
+      goSignupBtn.addEventListener("click", () => {
+        window.location.href = "signup.html";
+      });
+
+      loginBtn.addEventListener("click", async () => {
+        setMessage("", null);
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Signing in...";
+
+        const res = await window.AUTH.signIn(
+          voterIdEl.value.trim(),
+          passwordEl.value
+        );
+        if (!res.ok) {
+          setMessage(res.message, "error");
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+          return;
+        }
+
+        setMessage("Signed in!", "success");
+        window.location.href = "index.html";
+      });
+
+      voterIdEl.addEventListener("input", () => setMessage("", null));
+      passwordEl.addEventListener("input", () => setMessage("", null));
+
+      // If already signed in
+      try {
+        if (window.AUTH.getCurrentUser()) window.location.href = "index.html";
+      } catch {
+        // ignore
+      }
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Blockchain Voting</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Create Account</h1>
+      <div
+        class="subtleText"
+        style="text-align:center;margin-top:-6px;margin-bottom:12px;"
+      >
+        Create demo account with voter ID
+      </div>
+
+      <div class="panel">
+        <label for="voterId">Voter ID</label>
+        <input id="voterId" inputmode="numeric" autocomplete="username" />
+
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="new-password"
+        />
+
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+        />
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="signupBtn" type="button">Sign Up</button>
+          <button id="goLoginBtn" type="button" class="secondaryBtn">
+            Back to Login
+          </button>
+        </div>
+
+        <div class="message" id="message"></div>
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+      const voterIdEl = document.getElementById("voterId");
+      const passwordEl = document.getElementById("password");
+      const confirmPasswordEl = document.getElementById("confirmPassword");
+      const messageEl = document.getElementById("message");
+      const signupBtn = document.getElementById("signupBtn");
+      const goLoginBtn = document.getElementById("goLoginBtn");
+
+      function setMessage(text, kind) {
+        messageEl.textContent = text || "";
+        messageEl.classList.remove("error", "success");
+        if (kind === "error") messageEl.classList.add("error");
+        if (kind === "success") messageEl.classList.add("success");
+      }
+
+      goLoginBtn.addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+
+      signupBtn.addEventListener("click", async () => {
+        setMessage("", null);
+        signupBtn.disabled = true;
+        signupBtn.textContent = "Creating...";
+
+        const voterId = voterIdEl.value.trim();
+        const password = passwordEl.value;
+        const confirmPassword = confirmPasswordEl.value;
+
+        if (password !== confirmPassword) {
+          setMessage("Passwords do not match", "error");
+          signupBtn.disabled = false;
+          signupBtn.textContent = "Sign Up";
+          return;
+        }
+
+        if (!voterId) {
+          setMessage("Voter ID required", "error");
+          signupBtn.disabled = false;
+          signupBtn.textContent = "Sign Up";
+          return;
+        }
+
+        const res = await window.AUTH.signUp(voterId, password);
+        if (!res.ok) {
+          setMessage(res.message, "error");
+          signupBtn.disabled = false;
+          signupBtn.textContent = "Sign Up";
+          return;
+        }
+
+        setMessage("Account created. Now sign in.", "success");
+        signupBtn.disabled = false;
+        signupBtn.textContent = "Sign Up";
+        window.location.href = "login.html";
+      });
+
+      voterIdEl.addEventListener("input", () => setMessage("", null));
+      passwordEl.addEventListener("input", () => setMessage("", null));
+      confirmPasswordEl.addEventListener("input", () => setMessage("", null));
+    </script>
+  </body>
+</html>
+
